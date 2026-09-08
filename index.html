@@ -709,7 +709,11 @@
       object-fit: cover;
       opacity: 0.75;
       display: block;
+      /* Hide native controls on desktop — autoplay handles it */
+      pointer-events: none;
     }
+    .video-strip video::-webkit-media-controls { display: none !important; }
+    .video-strip video::-webkit-media-controls-enclosure { display: none !important; }
     .video-strip-overlay {
       position: absolute;
       inset: 0;
@@ -871,30 +875,100 @@
     @media (max-width: 900px) {
       nav { padding: 16px 24px; }
       .nav-links { display: none; }
-      #hero { grid-template-columns: 1fr; padding: 100px 24px 60px; gap: 32px; height: auto; max-height: none; overflow: visible; }
-      .hero-image { justify-content: center; }
-      .hero-photo-frame { width: 100%; max-width: 360px; height: auto; max-height: none; aspect-ratio: 4/5; }
-      section { padding: 80px 24px; }
-      #practoperf { padding: 80px 24px; }
-      #path { padding: 80px 24px; }
+
+      /* Hero: stack vertically, photo below text */
+      #hero {
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+        align-items: center;
+        height: auto;
+        max-height: none;
+        overflow: visible;
+        padding: 96px 24px 60px;
+        gap: 36px;
+        text-align: center;
+      }
+      .hero-text {
+        width: 100%;
+        max-width: 540px;
+      }
+      .hero-tagline { max-width: 100%; }
+      .hero-scroll { justify-content: center; }
+      .hero-image {
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: auto;
+        padding: 0 0 20px;
+      }
+      .hero-photo-frame {
+        width: min(320px, 80vw);
+        height: auto;
+        max-height: none;
+        aspect-ratio: 3/4;
+      }
+      .hero-caption { position: static; margin-top: 12px; display: block; text-align: center; }
+
+      section { padding: 72px 24px; }
+      #practoperf { padding: 72px 24px; }
+      #path { padding: 72px 24px; }
       footer { padding: 48px 24px; }
-      .about-grid, .thinking-grid, .future-grid, .path-statement { grid-template-columns: 1fr; gap: 48px; }
+
+      .about-grid, .thinking-grid, .future-grid, .path-statement { grid-template-columns: 1fr; gap: 40px; }
       .building-cards { grid-template-columns: 1fr; }
-      .practoperf-inner { grid-template-columns: 1fr; gap: 48px; }
+      .practoperf-inner { grid-template-columns: 1fr; gap: 40px; }
+
       .life-mosaic { grid-template-columns: 1fr 1fr; }
       .life-tile.wide { grid-column: span 2; }
+
+      /* Photo row: stack vertically */
       .photo-row { grid-template-columns: 1fr; height: auto; }
-      .photo-cell-placeholder { height: 200px; }
-      .photo-cell-main img { height: 200px; }
-      .timeline-item { grid-template-columns: 80px 1px 1fr; gap: 0 20px; }
-      .path-flow { justify-content: center; }
-      .footer-inner { flex-direction: column; align-items: flex-start; }
+      .photo-cell { height: 240px; }
+      .photo-cell-main img,
+      .photo-cell-2 img,
+      .photo-cell-3 img { height: 240px; }
+
+      /* Video: show controls on mobile so it's tappable */
+      .video-strip { height: 260px; }
+      .video-strip video { pointer-events: auto; }
+
+      .timeline-item { grid-template-columns: 72px 1px 1fr; gap: 0 16px; }
+
+      /* Path flow: wrap and shrink */
+      .path-flow { justify-content: flex-start; flex-wrap: wrap; row-gap: 4px; }
+      .path-node { padding: 10px 12px; }
+      .path-node-label { font-size: 12px; }
+      .path-arrow { font-size: 14px; padding: 0 4px; }
+
+      .footer-inner { flex-direction: column; align-items: flex-start; gap: 24px; }
+      .footer-links { flex-wrap: wrap; gap: 16px; }
     }
 
     @media (max-width: 520px) {
       .life-mosaic { grid-template-columns: 1fr; }
       .life-tile.wide { grid-column: span 1; }
       .building-cards { grid-template-columns: 1fr; }
+
+      /* Even smaller: tighter hero text */
+      .hero-photo-frame { width: 90vw; }
+      .hero-name { font-size: clamp(40px, 11vw, 60px); }
+
+      /* Photo row cells shorter on very small phones */
+      .photo-cell { height: 200px; }
+
+      /* Video strip shorter */
+      .video-strip { height: 220px; }
+
+      /* Timeline tighter */
+      .timeline-item { grid-template-columns: 56px 1px 1fr; gap: 0 12px; }
+      .timeline-date-label { font-size: 10px; }
+      .timeline-title { font-size: 18px; }
+
+      /* Path flow single column on small */
+      .path-flow { flex-direction: column; align-items: flex-start; }
+      .path-arrow { transform: rotate(90deg); padding: 4px 0; align-self: flex-start; margin-left: 28px; }
     }
   </style>
 </head>
@@ -1370,7 +1444,7 @@
 
       <!-- Video strip -->
       <div class="video-strip reveal">
-        <video autoplay muted loop playsinline>
+        <video autoplay muted loop playsinline controls>
           <source src="IMG_6313.MOV" type="video/mp4" />
         </video>
         <div class="video-strip-overlay">
